@@ -1,0 +1,35 @@
+Traffic Light System - specifications
+1 story point ~1 day of work; review story points and priority
+
+US-name : executeCycle - Story points: 8 - Priority: 1
+Pre-conditions: The system is running in automatic mode. When the cycle starts, one street (North–South) is set to Green and the opposing street (East–West) is set to Red. After the configured green duration expires, the active street transitions to Yellow for the configured yellow duration, then to Red. After a red clearance interval (All Red phase), the opposing street turns Green and the same sequence repeats symmetrically. The cycle continues indefinitely.
+Acceptance Test: executeCycleTest
+
+US-name : yellowTransition - Story points: 5 - Priority: 1
+Pre-conditions: The system is running and one direction currently has Green while the opposing direction has Red. When the configured green time expires, the signal transitions from Green to Yellow. The Yellow phase lasts for the configured duration according to Italian road standards. After the Yellow duration expires, the signal turns Red.
+Acceptance Test: yellowTransitionTest
+
+US-name : redClearancePhase - Story points: 5 - Priority: 1
+Pre-conditions: A direction has just transitioned from Yellow to Red. Before the opposing direction turns Green, the system enforces an All Red clearance interval for the configured duration. After the clearance duration expires, the opposing direction turns Green.
+Acceptance Test: redClearanceTest
+
+US-name : synchronizationPerStreet - Story points: 3 - Priority: 1
+Pre-conditions: The system is running. The two signals controlling opposite directions of the same street (e.g., North and South) always display the same color simultaneously. When one changes state (Green, Yellow, Red), the paired signal changes identically.
+Acceptance Test: synchronizationTest
+
+US-name : emergencyPreemption - Story points: 8 - Priority: 1
+Pre-conditions: The system is running and an emergency override signal is received. The system interrupts the current phase and grants Green to the emergency vehicle direction. After the emergency condition ends, the system resumes normal cycle.
+Acceptance Test: emergencyPreemptionTest
+
+US-name : manualOverride - Story points: 5 - Priority: 1
+Pre-conditions: The system is running and an authorized traffic officer activates manual mode. Automatic cycling is suspended. The officer may set any direction to Green, Yellow, or Red. When manual mode is deactivated, the system resumes automatic cycle.
+Acceptance Test: manualOverrideTest
+
+US-name : powerFailureRecovery - Story points: 5 - Priority: 1
+Pre-conditions: A power loss occurs while the system is operating. When power is restored, the system initializes and resumes the normal cycle starting from the initial phase.
+Acceptance Test: powerRecoveryTest
+
+US-name : timeBasedOptimization - Story points: 5 - Priority: 2
+Pre-conditions: The system clock is operational. During predefined peak hours, green durations are adjusted according to the configured schedule. During off-peak hours, standard timing applies.
+Acceptance Test: timeBasedOptimizationTest
+ 

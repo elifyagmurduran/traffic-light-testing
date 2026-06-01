@@ -1,0 +1,47 @@
+
+Exercises
+https://docs.google.com/forms/d/e/1FAIpQLScL41Wpx2E4d61Rn9XzavO215mypfJkNlAWUOf08ee95bQcAw/viewform
+
+#Command used in Lab1
+#install ollama
+brew install ollama
+
+#start ollama
+ollama serve
+
+#download a model
+ollama pull llama3
+
+#runs at
+http://localhost:11434
+
+#common issues 
+“command not found”
+Restart terminal.
+"Port already in use"
+#Stop previous instance:
+pkill ollama
+
+#create a python environment and activate or deactivate it 
+python3 -m venv venv
+source venv/bin/activate
+deactivate
+
+#work in the environment!
+
+#Convert .py → .ipynb and Open via CLI in an environment
+pip install jupytext
+jupytext --to notebook nameOfFile.py
+
+#Install the required library for generating acceptance tests from user stories using ollama
+pip install requests
+
+# Run a notebook 
+jupyter notebook <name of file>
+
+#Install Jupyter and register the kernel
+pip install notebook ipykernel
+python -m ipykernel install --user --name=venv --display-name "Python (venv)"
+
+#to import the python library requests to use in the http requests for the US to AT conversion
+Pip install requests
