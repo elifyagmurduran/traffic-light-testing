@@ -1,5 +1,15 @@
-import requests
+import ollama
 
-r = requests.post("http://localhost:11434/api/generate",
-                  json={"model": "llama3", "prompt": "Say hello in 3 words.", "stream": False})
-print(r.json()["response"])
+prompt = "What is the capital of France?"
+
+response = ollama.chat(
+    model="llama3:latest",
+    messages=[
+        {
+            "role": "user",
+            "content": prompt
+        }
+    ]
+)
+
+print(response["message"]["content"])
