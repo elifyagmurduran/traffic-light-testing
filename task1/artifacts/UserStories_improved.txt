@@ -1,0 +1,82 @@
+Traffic Light System - Improved User Stories (Task 1)
+
+We use four dependability properties:
+- Correctness  : does exactly what the spec says (right colors, order, timing)
+- Reliability  : keeps doing it correctly over time
+- Robustness   : copes with bad/unexpected situations without breaking
+- Safety       : never causes a disaster (never two crossing Greens at once)
+
+For each story we added:
+1. a clear GUARANTEE the original left out,
+2. concrete example values so tests can check them,
+3. an INVALID case (what must NOT be allowed).
+
+Example values (all configurable):
+- Green = 30 s, Yellow = 4 s, All-Red = 2 s
+
+TOP SAFETY RULE (applies everywhere):
+Two crossing directions (North-South vs East-West) must NEVER both be Green.
+If the system ever detects a bad state, it must fail safe to all-flashing-Red.
+
+---
+
+US-name : executeCycle - Story points: 8 - Priority: 1 - [Reliability]
+Pre-conditions: In automatic mode, North-South starts Green (30s), East-West Red.
+After Green expires, the active direction goes Green -> Yellow (4s) -> Red. After
+an All-Red gap (2s), the opposing direction turns Green. This repeats forever.
+Guarantee: the cycle runs correctly indefinitely and always obeys the top safety rule.
+Invalid case: setting both directions Green, or Green -> Red without Yellow, must
+be rejected and trigger fail-safe (all flashing Red).
+Acceptance Test: executeCycleTest
+
+US-name : yellowTransition - Story points: 5 - Priority: 1 - [Safety]
+Pre-conditions: When a Green direction's time is up, it MUST go to Yellow first
+(never straight to Red). Yellow lasts the configured time (4s), then turns Red.
+Guarantee: Red is only ever reached after a Yellow.
+Invalid case: a Green -> Red jump with no Yellow, or a too-short Yellow, is rejected.
+Acceptance Test: yellowTransitionTest
+
+US-name : redClearancePhase - Story points: 5 - Priority: 1 - [Safety]
+Pre-conditions: After a direction goes Yellow -> Red, ALL directions stay Red for
+the All-Red gap (2s) before the opposing direction turns Green.
+Guarantee: there is always a real all-Red gap between one Red and the other Green.
+Invalid case: turning the other direction Green before the gap finishes is rejected.
+Acceptance Test: redClearanceTest
+
+US-name : synchronizationPerStreet - Story points: 3 - Priority: 1 - [Correctness]
+Pre-conditions: The two signals on the same street (North and South) always show
+the same color at the same moment, and change together.
+Guarantee: paired signals are always equal in color.
+Invalid case: North and South showing different colors must be detected and fail safe.
+Acceptance Test: synchronizationTest
+
+US-name : emergencyPreemption - Story points: 8 - Priority: 1 - [Robustness]
+Pre-conditions: When a valid emergency signal arrives, the system safely brings
+conflicting directions to Red (through the normal Yellow + All-Red, never instantly)
+and gives Green to the emergency direction. When the emergency ends, it resumes.
+Guarantee: even during an emergency the top safety rule still holds.
+Invalid case: an emergency request must NOT cause an instant unsafe switch; it must
+still pass through Yellow + All-Red.
+Acceptance Test: emergencyPreemptionTest
+
+US-name : manualOverride - Story points: 5 - Priority: 1 - [Robustness]
+Pre-conditions: An AUTHORIZED officer (valid credential) turns on manual mode.
+Auto cycling pauses. The officer can set colors, BUT the system still refuses any
+command that would break the top safety rule. Turning manual mode off resumes auto.
+Guarantee: only an authorized user gets manual mode; safety can never be overridden.
+Invalid case: an unauthorized user, or a manual command that makes two Greens, is rejected.
+Acceptance Test: manualOverrideTest
+
+US-name : powerFailureRecovery - Story points: 5 - Priority: 1 - [Robustness]
+Pre-conditions: If power is lost, then restored, the system starts from a known
+safe state (all Red) and resumes the normal cycle from the beginning.
+Guarantee: after recovery it always starts safe, never mid-phase in an unsafe state.
+Invalid case: resuming straight into a two-Green or mid-Yellow state is prevented.
+Acceptance Test: powerRecoveryTest
+
+US-name : timeBasedOptimization - Story points: 5 - Priority: 2 - [Correctness]
+Pre-conditions: During peak hours Green uses the peak schedule; off-peak uses
+standard timing. Changing schedule must never shorten Yellow or All-Red below safe minimums.
+Guarantee: schedule changes affect only Green length, never the safety-critical gaps.
+Invalid case: a schedule that sets Yellow or All-Red below the safe minimum is rejected.
+Acceptance Test: timeBasedOptimizationTest
