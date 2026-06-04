@@ -1,0 +1,90 @@
+ACCEPTANCE TESTS (Task 1)
+======================================================================
+Generated: 2026-06-01 12:14:37
+Total generation time: 49.7 seconds
+Model: llama3
+======================================================================
+
+
+[1] Story: executeCycle  |  Dependability: Reliability
+----------------------------------------------------------------------
+| AT name: executeCycleTest | Reliability | |
+| ---- | ---- | ---- |
+| Input  | In automatic mode with North-South starts Green (30s), East-West Red. After Green expires, the active direction goes Green -> Yellow (4s) -> Red. After an All-Red gap (2s), the opposing direction turns Green. This repeats forever. | Cycle runs correctly indefinitely and always obeys the top safety rule. |
+|  | Setting both directions Green or Green -> Red without Yellow. | Trigger fail-safe (all flashing Red). |
+| US name: executeCycle | |
+
+
+[2] Story: yellowTransition  |  Dependability: Safety
+----------------------------------------------------------------------
+| AT name: yellowTransitionTest | [Safety] | |
+| ---- | ---- | ---- |
+| Input | Description | Expected behavior |
+| Start in Green state | Time runs out for Green direction | Transition to Yellow and wait configured time (4s) before turning Red |
+| Invalid condition | Skip Yellow, transition directly from Green to Red | Fail ( rejected ) |
+| US name: yellowTransition | | |
+
+
+[3] Story: redClearancePhase  |  Dependability: Safety
+----------------------------------------------------------------------
+| AT name: redClearanceTest | [Safety] | |
+| ---- | ---- | ---- |
+| Input | Description | Expected behavior |
+| Yellow -> Red, All-Red (2s) | Directions stay Red for the all-red gap before turning Green. | Opposing direction turns Green after the 2-second all-red gap. |
+| Invalid condition | Opposing direction turns Green before the 2-second all-red gap | Rejected: no real all-red gap |
+| US name: redClearancePhase | | |
+
+
+[4] Story: synchronizationPerStreet  |  Dependability: Correctness
+----------------------------------------------------------------------
+| AT name: synchronizationTest | [Correctness] | |
+| ---- | ---- | ---- |
+| Input  | Description | Expected behavior |
+| Both signals show green | North and South signals are the same color (green) at the same moment. | Signals remain synchronized, no failure detected. |
+| | | |
+| Invalid condition  | Description | Expected behavior |
+| North shows red, South shows green | North and South signals show different colors. | Test fails due to synchronization error, triggering fail-safe mechanism. |
+| US name: synchronizationPerStreet | | |
+
+
+[5] Story: emergencyPreemption  |  Dependability: Robustness
+----------------------------------------------------------------------
+| AT name: emergencyPreemptionTest | Robustness | |
+| ---- | ---- | ---- |
+| Input  | Description                | Expected behavior                         |
+| Valid   | A valid emergency signal arrives | The system safely brings conflicting directions to Red and gives Green to the emergency direction. |
+|         |                             | It passes through Yellow + All-Red, never instantly switching.     |
+| Invalid | An invalid or fake emergency request is sent | The system does not switch immediately; it stays in its current state.  |
+| US name: emergencyPreemption | | |
+
+
+[6] Story: manualOverride  |  Dependability: Robustness
+----------------------------------------------------------------------
+| AT name: manualOverrideTest | Robustness | |
+| ---- | ---- | ---- |
+| Input | Description | Expected behavior |
+| Authorized Officer turns on manual mode | An authorized officer sets colors while in manual mode. The system refuses any command that would break the top safety rule. | System remains in manual mode, and all commands are validated against safety rules. |
+| Invalid condition: Unauthorized user tries to turn on manual mode | A non-authorized officer attempts to enter manual mode. | Command is rejected, and system stays in auto mode. |
+| US name: manualOverride - |  |
+
+
+[7] Story: powerFailureRecovery  |  Dependability: Robustness
+----------------------------------------------------------------------
+| AT name: powerRecoveryTest | [Robustness] | |
+| ---- | ---- | ---- |
+| Input | Description | Expected behavior |
+| Normal Power → Power Failure → Recovery | The system recovers from a power failure and starts from a known safe state (all Red). It then resumes the normal cycle from the beginning, ensuring it always starts in a safe state. | System starts in a safe state (all Red) and resumes normal cycle. |
+| Invalid condition | Description | Expected behavior |
+| Power Failure → Recovery → Two-Green State | The system recovers from a power failure but attempts to resume into a two-Green or mid-Yellow state, which is prevented by the system. | System prevents resuming into an unsafe state and stays in a safe state (all Red). |
+| US name: powerFailureRecovery | | |
+
+
+[8] Story: timeBasedOptimization  |  Dependability: Correctness
+----------------------------------------------------------------------
+| AT name: timeBasedOptimizationTest | [Correctness] | |
+| ---- | ---- | ---- |
+| Input | Description | Expected behavior |
+| Standard timing, off-peak hours | Peak schedule is applied to Green without affecting Yellow or All-Red. | Schedule change affects only Green length. |
+| Invalid condition | A schedule that sets Yellow or All-Red below the safe minimum is rejected. | Rejected with error message. |
+| US name: timeBasedOptimization | | |
+
